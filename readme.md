@@ -15,20 +15,13 @@ A powerful automation tool for creating YouTube channels and uploading shorts vi
 
 ## Project Structure
 
-.
-├── account_creator_gui.py      # Main GUI application to create YouTube accounts
-
-├── google_login.py             # Helper script to log into Google
-
-├── parsing_csv.py              # Script to parse CSV files (emails, proxies, etc.)
-
-├── youtube_login.py            # Script to create a channel in YouTube
-
-├── youtube_upload_gui.py       # Main GUI application to upload videos
-
-├── video_uploader.py           # Helper script to upload videos to YouTube
-
-└── xpaths/                     # Directory containing the required XPaths
+- `account_creator_gui.py`      # Main GUI application to create YouTube accounts
+- `google_login.py`             # Helper script to log into Google
+- `parsing_csv.py`              # Script to parse CSV files (emails, proxies, etc.)
+- `youtube_login.py`            # Script to create a channel in YouTube
+- `youtube_upload_gui.py`       # Main GUI application to upload videos
+- `video_uploader.py`           # Helper script to upload videos to YouTube
+- `xpaths/`                     # Directory containing the required XPaths
 
 ## Prerequisites
 
@@ -41,12 +34,14 @@ A powerful automation tool for creating YouTube channels and uploading shorts vi
 ## Installation
 
 1. Clone the repository:
-git clone https://github.com/yourusername/youtube-shorts-bot.git
+```bash 
+git clone https://github.com/mohdtalal3/Youtube_shorts_bot.git
 cd youtube-shorts-bot
-
+```
 2. Install required dependencies:
+```bash 
 pip install -r requirements.txt
-
+```
 ## Usage
 
 ### 1. Account Creator Application
