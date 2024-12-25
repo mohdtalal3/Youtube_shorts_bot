@@ -75,6 +75,7 @@ The application generates `output.csv` with additional fields:
 | Name | Login_detail | proxy | profile_id | account_created | title | description | upload_video |
 |------|--------------|-------|------------|-----------------|-------|-------------|--------------|
 | Talal | dftrmuykyfd50@gmail.com:AdnaN999:QhyuBlpara811807@outlook.com | 89.116.56.102:50100:kymar227:EKEPK6jNQo | 676c6acdde240c7932849b40 | TRUE | | | |
+
 `Here, account_created is TRUE, meaning the channel was successfully created, and three fields (title, description, upload_video)  remain empty.`
 
 `This output file is used in youtube upload video application.`
