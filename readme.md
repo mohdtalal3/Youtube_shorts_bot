@@ -17,12 +17,19 @@ A powerful automation tool for creating YouTube channels and uploading shorts vi
 
 .
 ├── account_creator_gui.py      # Main GUI application to create YouTube accounts
+
 ├── google_login.py             # Helper script to log into Google
+
 ├── parsing_csv.py              # Script to parse CSV files (emails, proxies, etc.)
+
 ├── youtube_login.py            # Script to create a channel in YouTube
+
 ├── youtube_upload_gui.py       # Main GUI application to upload videos
+
 ├── video_uploader.py           # Helper script to upload videos to YouTube
+
 └── xpaths/                     # Directory containing the required XPaths
+
 ## Prerequisites
 
 - Python 3.x
