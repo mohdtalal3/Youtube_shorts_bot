@@ -67,7 +67,7 @@ The application generates `output.csv` with additional fields:
 | Name | Login_detail | proxy | profile_id | account_created | title | description | upload_video |
 |------|--------------|-------|------------|-----------------|-------|-------------|--------------|
 | Talal | dftrmuykyfd50@gmail.com:AdnaN999:QhyuBlpara811807@outlook.com | 89.116.56.102:50100:kymar227:EKEPK6jNQo | 676c6acdde240c7932849b40 | TRUE | | | |
-
+- Here, account_created is TRUE, meaning the channel was successfully created, and three fields (title, description, upload_video)  remain empty.
 - This output file is used in youtube upload video application.
 
 [Screenshot of output CSV placeholder]
@@ -87,6 +87,13 @@ The application generates `output.csv` with additional fields:
 5. Select video file(s)
 6. Run the application
 
+`Fill the title and description columns with the desired video details.`
+`Leave upload_video empty; it will be automatically updated to TRUE or FALSE depending on whether the video was uploaded successfully.`
+
+
+ 
+
+
 #### Output:
 The application generates `upload_data.csv` with upload status:
 
@@ -94,6 +101,7 @@ The application generates `upload_data.csv` with upload status:
 |------|--------------|-------|------------|-----------------|-------|-------------|--------------|
 | Talal | dftrmuykyfd50@gmail.com:AdnaN999:QhyuBlpara811807@outlook.com | 89.116.56.102:50100:kymar227:EKEPK6jNQo | 676c6acdde240c7932849b40 | TRUE | My Video | Video Description | TRUE |
 
+`upload_video becomes TRUE if the video is uploaded successfully.`
 [Screenshot of upload data CSV placeholder]
 
 ## GUI Screenshots
