@@ -49,25 +49,26 @@ pip install -r requirements.txt
 #### Required Input:
 - Go Login Token
 - CSV file with following format:
+- CSV File Requirements
 
+`Fill Name, Login_detail (like email:password:recoveryEmail), and proxy`
+
+`Leave profile_id and account_created empty; these will be automatically populated by the script`
 | Name | Login_detail | proxy | profile_id | account_created |
 |------|--------------|-------|------------|-----------------|
 | Talal | dftrmuykyfd50@gmail.com:AdnaN999:QhyuBlpara811807@outlook.com | 89.116.56.102:50100:kymar227:EKEPK6jNQo | | |
 
 [Screenshot of input CSV placeholder]
 
-#### Steps:
-1. Launch `account_creator_gui.py`
-2. Enter Go Login token
-3. Select input CSV file
-4. Run the application
 
-#### Output: 
+#### Generates Output File : 
 The application generates `output.csv` with additional fields:
 
 | Name | Login_detail | proxy | profile_id | account_created | title | description | upload_video |
 |------|--------------|-------|------------|-----------------|-------|-------------|--------------|
 | Talal | dftrmuykyfd50@gmail.com:AdnaN999:QhyuBlpara811807@outlook.com | 89.116.56.102:50100:kymar227:EKEPK6jNQo | 676c6acdde240c7932849b40 | TRUE | | | |
+
+- This output file is used in youtube upload video application.
 
 [Screenshot of output CSV placeholder]
 
