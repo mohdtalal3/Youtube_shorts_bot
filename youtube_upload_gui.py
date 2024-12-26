@@ -119,6 +119,7 @@ class VideoUploadWorker(QThread):
                 
                 login_details = parse_login_details(row['Login_detail'], row['Name'])
                 proxy_details = parse_proxy_details(row['proxy'])
+                checker = row['account_created']
                 
                 profile_data = {
                     'login_details': login_details,
@@ -129,8 +130,10 @@ class VideoUploadWorker(QThread):
                     'title': row['title'],
                     'description': row['description']
                 }
-
-                upload = self.open_profile(profile_data)
+                if checker is True:
+                    upload = self.open_profile(profile_data)
+                else:
+                    upload=False
                 new_row = {
                     'Login_detail': row['Login_detail'],
                     'proxy': row['proxy'],
