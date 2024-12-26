@@ -17,7 +17,7 @@ def upload_on_youtube(driver,profile_data):
     time.sleep(10)
     #continue if exists
     try:
-        WebDriverWait(driver, 5).until(
+        WebDriverWait(driver, 6).until(
             EC.presence_of_element_located((By.XPATH, continue_button_channel_creation))
         )
         driver.find_element(By.XPATH, continue_button_channel_creation).click()
@@ -119,7 +119,7 @@ def upload_on_youtube(driver,profile_data):
         driver.find_element(By.XPATH,close_button).click()
         time.sleep(3)
     except Exception as e:
-        print("close page not appears", e)
-        return False
+        print("close page not appears")
+        pass
 
     return True

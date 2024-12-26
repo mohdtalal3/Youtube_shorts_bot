@@ -120,7 +120,7 @@ class VideoUploadWorker(QThread):
                 login_details = parse_login_details(row['Login_detail'], row['Name'])
                 proxy_details = parse_proxy_details(row['proxy'])
                 checker = row['account_created']
-                
+                print(checker)
                 profile_data = {
                     'login_details': login_details,
                     'proxy_details': proxy_details,
@@ -130,7 +130,7 @@ class VideoUploadWorker(QThread):
                     'title': row['title'],
                     'description': row['description']
                 }
-                if checker is True:
+                if row['account_created'] =="TRUE":
                     upload = self.open_profile(profile_data)
                 else:
                     upload=False
@@ -152,7 +152,6 @@ class VideoUploadWorker(QThread):
                 progress = int((processed / total_rows) * 100)
                 self.progress.emit(progress)
                 self.status.emit(f"Processed profile {row['profile_id']} - {progress}%")
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()

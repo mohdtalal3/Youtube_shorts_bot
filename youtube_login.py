@@ -55,6 +55,6 @@ def create_account(driver,name):
 
     except Exception as e:
         print("countine Channel Button not found", e)
-        return False
+        pass
     
     return True
