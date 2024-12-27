@@ -1,6 +1,8 @@
 import sys
 import csv
 import time
+import os
+import random
 from PyQt5.QtWidgets import (QMainWindow, QApplication, QWidget, QVBoxLayout, 
                             QHBoxLayout, QLabel, QLineEdit, QPushButton, 
                             QProgressBar, QFileDialog, QMessageBox, QTextEdit)
@@ -10,30 +12,63 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from gologin import GoLogin, getRandomPort
-from parsing_csv import *
-from video_uploader import *
+from parsing_csv import parse_login_details, parse_proxy_details
+from video_uploader import upload_on_youtube
 
 class VideoUploadWorker(QThread):
     progress = pyqtSignal(int)
     status = pyqtSignal(str)
     finished = pyqtSignal()
 
-    def __init__(self, input_file, token, video_path):
+    def __init__(self, input_file, token, videos_folder):
         super().__init__()
         self.input_file = input_file
         self.token = token
-        self.video_path = video_path
+        self.videos_folder = videos_folder
         self.is_paused = False
         self.output_file = 'upload_data.csv'
+        self.available_videos = []
+
+    def validate_videos(self):
+        """Check if there are enough videos for all profiles"""
+        video_extensions = ('.mp4', '.avi', '.mkv', '.mov')
+        self.available_videos = [f for f in os.listdir(self.videos_folder) 
+                               if f.lower().endswith(video_extensions)]
+        
+        with open(self.input_file, 'r') as csvfile:
+            row_count = sum(1 for row in csvfile) - 1  # Subtract header row
+            
+        if len(self.available_videos) < row_count:
+            raise Exception(f"Not enough videos in folder. Need {row_count} videos but found {len(self.available_videos)}")
+        
+        return True
+
+    def get_random_video(self):
+        """Get a random video path and remove it from available videos"""
+        if not self.available_videos:
+            raise Exception("No more videos available")
+            
+        video_name = random.choice(self.available_videos)
+        self.available_videos.remove(video_name)
+        return os.path.join(self.videos_folder, video_name)
+
+    def delete_video(self, video_path):
+        """Delete the video after upload"""
+        try:
+            os.remove(video_path)
+            self.status.emit(f"Deleted video: {os.path.basename(video_path)}")
+        except Exception as e:
+            self.status.emit(f"Error deleting video {os.path.basename(video_path)}: {str(e)}")
 
     def run(self):
         try:
-            self.process_csv_youtube()
+            if self.validate_videos():
+                self.process_csv_youtube()
             self.finished.emit()
         except Exception as e:
             self.status.emit(f"Error: {str(e)}")
-    
-    def update_proxies(self,profile_data):
+
+    def update_proxies(self, profile_data):
         gl = GoLogin({"token": self.token})
         profile_id = profile_data['profile_id']
         proxy_info = profile_data['proxy_details']
@@ -55,9 +90,11 @@ class VideoUploadWorker(QThread):
                 print(f"Proxy updated successfully for profile {profile_id}")
             except Exception as e:
                 print(f"Error updating proxy for profile {profile_id}: {e}")
-    def open_profile(self, profile_data):
 
+    def open_profile(self, profile_data):
         self.update_proxies(profile_data)
+        proxy_config = None
+        
         if profile_data.get('proxy_details'):
             proxy_config = {
                 "mode": "http",
@@ -66,15 +103,14 @@ class VideoUploadWorker(QThread):
                 "username": profile_data['proxy_details']['username'],
                 "password": profile_data['proxy_details']['password']
             }
-        
-        """Open a profile and attempt to upload video"""
+
         gl = GoLogin({
             "token": self.token, 
             "profile_id": profile_data['profile_id'],
             "port": getRandomPort(),
             "writeCookiesToServer": True,
             "uploadCookiesToServer": True,
-            "proxy": proxy_config if proxy_config else None
+            "proxy": proxy_config
         })
         
         debugger_address = gl.start()
@@ -86,7 +122,10 @@ class VideoUploadWorker(QThread):
         driver = webdriver.Chrome(service=service, options=chrome_options)
         
         try:
-            return upload_on_youtube(driver, profile_data)
+            success = upload_on_youtube(driver, profile_data)
+            if success:
+                self.delete_video(profile_data['video_path'])
+            return success
         except Exception as e:
             print(f"Error during profile opening: {e}")
             return False
@@ -96,18 +135,15 @@ class VideoUploadWorker(QThread):
 
     def process_csv_youtube(self):
         fieldnames = ['Login_detail', 'proxy', 'profile_id', 'account_created', 
-                     'title', 'description', 'upload_video']
+                     'title', 'description', 'upload_video', 'video_used']
         
-        # Get total number of rows
         with open(self.input_file, 'r') as csvfile:
-            total_rows = sum(1 for row in csvfile) - 1  # Subtract header row
-        
-        # Write header
+            total_rows = sum(1 for row in csvfile) - 1
+
         with open(self.output_file, 'w', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
 
-        # Process rows
         processed = 0
         with open(self.input_file, 'r') as csvfile:
             reader = csv.DictReader(csvfile)
@@ -117,23 +153,28 @@ class VideoUploadWorker(QThread):
 
                 self.status.emit(f"Processing profile: {row['profile_id']}")
                 
+                video_path = self.get_random_video()
+                self.status.emit(f"Using video: {os.path.basename(video_path)}")
+                
                 login_details = parse_login_details(row['Login_detail'], row['Name'])
                 proxy_details = parse_proxy_details(row['proxy'])
-                checker = row['account_created']
-                print(checker)
+                
                 profile_data = {
                     'login_details': login_details,
                     'proxy_details': proxy_details,
                     'profile_id': row['profile_id'],
                     'account_created': row['account_created'],
-                    'video_path': self.video_path,
+                    'video_path': video_path,
                     'title': row['title'],
                     'description': row['description']
                 }
-                if row['account_created'] =="TRUE":
+
+                if row['account_created'] == "TRUE":
                     upload = self.open_profile(profile_data)
                 else:
-                    upload=False
+                    upload = False
+                    #self.delete_video(video_path)
+
                 new_row = {
                     'Login_detail': row['Login_detail'],
                     'proxy': row['proxy'],
@@ -141,7 +182,8 @@ class VideoUploadWorker(QThread):
                     'account_created': row['account_created'],
                     'title': row['title'],
                     'description': row['description'],
-                    'upload_video': 'True' if upload else 'False'
+                    'upload_video': 'True' if upload else 'False',
+                    'video_used': os.path.basename(video_path)
                 }
 
                 with open(self.output_file, 'a', newline='') as csvfile:
@@ -152,6 +194,7 @@ class VideoUploadWorker(QThread):
                 progress = int((processed / total_rows) * 100)
                 self.progress.emit(progress)
                 self.status.emit(f"Processed profile {row['profile_id']} - {progress}%")
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -189,21 +232,18 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout(central_widget)
+        
         logo_label = QLabel()
-        pixmap = QPixmap('youtube_logo.jpg') 
+        pixmap = QPixmap('youtube_logo.jpg')
         scaled_pixmap = pixmap.scaled(600, 600, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         logo_label.setPixmap(scaled_pixmap)
         logo_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(logo_label)
 
-        # Token input
         self.create_input_field(layout, "GoLogin Token:", "token_input")
-
-        # File selections
         self.create_file_selector(layout, "Input CSV File:", "input_csv_path")
-        self.create_file_selector(layout, "Video File:", "video_path", "Video Files (*.mp4 *.avi *.mkv *.mov)")
+        self.create_file_selector(layout, "Video Folder:", "video_path")
 
-        # Progress bar
         self.progress_bar = QProgressBar()
         self.progress_bar.setStyleSheet("""
             QProgressBar {
@@ -217,13 +257,11 @@ class MainWindow(QMainWindow):
         """)
         layout.addWidget(self.progress_bar)
 
-        # Status text area
         self.status_text = QTextEdit()
         self.status_text.setReadOnly(True)
         self.status_text.setMaximumHeight(100)
         layout.addWidget(self.status_text)
 
-        # Control buttons
         button_layout = QHBoxLayout()
         self.start_btn = QPushButton("Start Upload")
         self.pause_btn = QPushButton("Pause")
@@ -264,7 +302,11 @@ class MainWindow(QMainWindow):
         input_field.setReadOnly(True)
         browse_btn = QPushButton("Browse")
         browse_btn.setStyleSheet("background-color: #4CAF50;")
-        browse_btn.clicked.connect(lambda: self.browse_file(input_field, file_filter))
+        
+        if "Video Folder:" in label_text:
+            browse_btn.clicked.connect(lambda: self.browse_folder(input_field))
+        else:
+            browse_btn.clicked.connect(lambda: self.browse_file(input_field, file_filter))
         
         setattr(self, attribute_name, input_field)
         
@@ -284,6 +326,11 @@ class MainWindow(QMainWindow):
             self, "Select File", "", file_filter)
         if file_name:
             input_field.setText(file_name)
+
+    def browse_folder(self, input_field):
+        folder_path = QFileDialog.getExistingDirectory(self, "Select Videos Folder")
+        if folder_path:
+            input_field.setText(folder_path)
 
     def update_status(self, message):
         self.status_text.append(message)
