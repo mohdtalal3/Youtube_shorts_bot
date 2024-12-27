@@ -105,7 +105,7 @@ def upload_on_youtube(driver,profile_data):
         driver.find_element(By.XPATH,public_button).click()
         time.sleep(3)
         driver.find_element(By.XPATH,done_button_youtube).click()
-        time.sleep(3)
+        time.sleep(30)
     except Exception as e:
         print("Visibility page not appears", e)
         return False
