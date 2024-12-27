@@ -41,6 +41,7 @@ done_button_youtube='//*[@id="done-button"]'
 
 close_button="//ytcp-icon-button[@id='close-icon-button']"
 
+other_close_button="//ytcp-button[@id='close-button']"
 
 
 #coloyit562@kelenson.com

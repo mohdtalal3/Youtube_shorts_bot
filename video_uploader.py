@@ -25,7 +25,21 @@ def upload_on_youtube(driver,profile_data):
 
     except Exception as e:
         pass
+    try:
+        WebDriverWait(driver, 6).until(
+            EC.presence_of_element_located((By.XPATH, other_close_button))
+        )
+        driver.find_element(By.XPATH, other_close_button).click()
+        time.sleep(3)
+
+    except Exception as e:
+        driver.get("https://studio.youtube.com")
+        time.sleep(5)
+        pass
+
+    
     #Finding Upload Button
+
     try:
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, upload_button))
@@ -109,17 +123,15 @@ def upload_on_youtube(driver,profile_data):
     except Exception as e:
         print("Visibility page not appears", e)
         return False
-    
-
-    # close button 
-    try:
-        WebDriverWait(driver, 5).until(
-            EC.presence_of_element_located((By.XPATH,close_button))
-        )
-        driver.find_element(By.XPATH,close_button).click()
-        time.sleep(3)
-    except Exception as e:
-        print("close page not appears")
-        pass
+    # # close button 
+    # try:
+    #     WebDriverWait(driver, 5).until(
+    #         EC.presence_of_element_located((By.XPATH,close_button))
+    #     )
+    #     driver.find_element(By.XPATH,close_button).click()
+    #     time.sleep(3)
+    # except Exception as e:
+    #     print("close page not appears")
+    #     pass
 
     return True

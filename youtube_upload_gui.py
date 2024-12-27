@@ -169,7 +169,7 @@ class VideoUploadWorker(QThread):
                     'description': row['description']
                 }
 
-                if row['account_created'] == "TRUE":
+                if row['account_created'] == "TRUE" or row['account_created'] == "True":
                     upload = self.open_profile(profile_data)
                 else:
                     upload = False
