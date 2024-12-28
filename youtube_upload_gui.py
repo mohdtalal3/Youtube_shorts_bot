@@ -110,6 +110,7 @@ class VideoUploadWorker(QThread):
             "port": getRandomPort(),
             # "writeCookiesToServer": True,
             # "uploadCookiesToServer": True,
+            #"writeCookiesFromServer": True,
             "proxy": proxy_config
         })
         

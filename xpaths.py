@@ -43,5 +43,6 @@ close_button="//ytcp-icon-button[@id='close-icon-button']"
 
 other_close_button="//ytcp-button[@id='close-button']"
 
+got_it="//ytcp-button[@id='got-it-button']"
 
 #coloyit562@kelenson.com

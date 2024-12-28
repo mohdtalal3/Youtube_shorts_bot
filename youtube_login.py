@@ -9,6 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 import random
+from selenium.webdriver.common.action_chains import ActionChains
 
 
 def slow_type(driver, selector, text):
@@ -52,6 +53,9 @@ def create_account(driver,name):
             EC.presence_of_element_located((By.XPATH, continue_button_channel_creation))
         )
         driver.find_element(By.XPATH, continue_button_channel_creation).click()
+        time.sleep(4)
+        driver.close()
+        time.sleep(3)
 
     except Exception as e:
         print("countine Channel Button not found", e)

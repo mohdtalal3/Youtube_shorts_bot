@@ -12,8 +12,8 @@ import random
 
 
 def upload_on_youtube(driver,profile_data):
+    time.sleep(4)
     driver.get("https://studio.youtube.com")
-    driver.maximize_window()
     time.sleep(10)
     #continue if exists
     try:
@@ -118,8 +118,18 @@ def upload_on_youtube(driver,profile_data):
         )
         driver.find_element(By.XPATH,public_button).click()
         time.sleep(3)
+        try:
+            WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, got_it))
+        )
+            driver.find_element(By.XPATH,got_it).click()
+        except:
+            pass
+        time.sleep(4)
         driver.find_element(By.XPATH,done_button_youtube).click()
         time.sleep(30)
+        driver.close()
+        time.sleep(2)
     except Exception as e:
         print("Visibility page not appears", e)
         return False

@@ -40,7 +40,8 @@ def open_profile(token, profile_data):
         "token": token, 
         "profile_id": profile_data['profile_id'],
         "port": getRandomPort(),
-        "writeCookiesFromServer": True,
+        #"writeCookiesFromServer": True,
+        "writeCookiesToServer":True,
         "uploadCookiesToServer": True,
         "proxy": proxy_config if proxy_config else None
     })
@@ -100,6 +101,7 @@ def create_and_test_profile(token, login_info, proxy_info=None):
                 "mode": "alerted",
                 "enabled": True,
             },
+            "writeCookiesToServer":True,
             "uploadCookiesToServer": True,
             "writeCookiesFromServer": True,
         }
