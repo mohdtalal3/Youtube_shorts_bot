@@ -108,8 +108,8 @@ class VideoUploadWorker(QThread):
             "token": self.token, 
             "profile_id": profile_data['profile_id'],
             "port": getRandomPort(),
-            "writeCookiesToServer": True,
-            "uploadCookiesToServer": True,
+            # "writeCookiesToServer": True,
+            # "uploadCookiesToServer": True,
             "proxy": proxy_config
         })
         
