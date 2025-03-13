@@ -17,7 +17,7 @@ def not_now(driver):
         driver.find_element(By.XPATH, not_now_button_xpath).click()
         return True
     except Exception as e:
-        print("Not now button not found:", e)
+        #print("Not now button not found:", e)
         pass
         return False
     
@@ -69,6 +69,7 @@ def login_google(driver, email, password, recovery_email):
         slow_type(driver, email_input_xpath, recovery_email)
         driver.find_element(By.XPATH, next_button_xpath).click()
     except Exception as e:
+        return True
         print("Recovery email option not found:", e)
         pass
 
@@ -82,7 +83,7 @@ def login_google(driver, email, password, recovery_email):
         driver.find_element(By.XPATH,cancel_button).click()
         time.sleep(5)
     except Exception as e:
-        print("Recovery email", e)
+        #print("Recovery email", e)
         pass
     time.sleep(5)
     not_now(driver)
